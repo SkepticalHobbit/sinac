@@ -16,24 +16,24 @@ def transform_menu(window, node):
 
 def node_selector_child(window, node):
     if isinstance(node, BinaryOperation):
-        window.addstr(2, 0, '0) Up')
-        window.addstr(3, 0, '1) ' + str(node.left))
-        window.addstr(4, 0, '2) ' + str(node.right))
+        window.addstr(2, 0, '^) Up')
+        window.addstr(3, 0, '<-) ' + str(node.left))
+        window.addstr(4, 0, '->) ' + str(node.right))
         window.addstr(5, 0, '3) Select')
         window.refresh()
+        
         choice = window.getkey()
-        choice = int(choice)
 
-        if choice == 0:
+        if choice == 'KEY_UP':
             return 'parent'
-        if choice == 1:
+        if choice == 'KEY_LEFT':
             return node.left
-        if choice == 2:
+        if choice == 'KEY_RIGHT':
             return node.right
         if choice == 3:
             return node
     else:
-        window.addstr(2, 0, '0) Up')
+        window.addstr(2, 0, '^) Up')
         window.addstr(3, 0, '1) Select')
         window.refresh()
         choice = window.getkey()
@@ -63,6 +63,7 @@ def main(expr):
             stdscr.addstr(1, 0, str(current_node))
             stdscr.addstr(2, 0, '1) Switch node')
             stdscr.addstr(3, 0, '2) Transform')
+            stdscr.addstr(4, 0, '3) Exit')
             stdscr.refresh()
 
             choice = stdscr.getkey()
@@ -84,6 +85,8 @@ def main(expr):
                 current_node.left = new_expr.left
                 current_node.op = new_expr.op
                 current_node.right = new_expr.right
+            if choice == 3:
+                break
     except Exception as err:
         caughtExceptions = str(err)
 

@@ -50,6 +50,9 @@ class BinaryOperation(object):
 
     __repr__ = __str__
 
+    def args(self):
+        return [self.left, self.right]
+
 x = Symbol('x')
 y = Symbol('y')
 z = Symbol('z')

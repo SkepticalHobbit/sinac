@@ -52,7 +52,3 @@ class BinaryOperation(object):
 
     def args(self):
         return [self.left, self.right]
-
-x = Symbol('x')
-y = Symbol('y')
-z = Symbol('z')

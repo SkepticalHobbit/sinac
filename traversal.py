@@ -1,4 +1,5 @@
 from sinac.core import *
+from sinac import transform
 
 def select_child(node):
     if isinstance(node, BinaryOperation):
@@ -20,7 +21,7 @@ def select_child(node):
         if choice == 0:
             return 'parent'
 
-def traversal(expr):
+def select_node(expr):
     traversal = [expr]
 
     while len(traversal) > 0:
@@ -28,9 +29,16 @@ def traversal(expr):
        
         print("\n=========================")
         print(current_node)
-        
-        selected_node = select_child(current_node)
-        if selected_node == 'parent':
-            traversal.pop()
-        elif selected_node is not None:
-            traversal.append(selected_node)
+
+        print("1) Change node")
+        print("2) Select node") 
+        choice = int(input())
+
+        if choice == 1:
+            selected_node = select_child(current_node)
+            if selected_node == 'parent':
+                traversal.pop()
+            elif selected_node is not None:
+                traversal.append(selected_node)
+        if choice == 2:
+            return current_node

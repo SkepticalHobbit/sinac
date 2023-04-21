@@ -4,10 +4,9 @@ def develop(expr):
     # do the development a*(b+c) = a*b + a*c
     
     # check if expression is in the form a*(b+c)
-    if isinstance(expr, BinaryOperation) and\
-            isinstance(expr.right, BinaryOperation):
+    if isinstance(expr, BinaryOperation) and isinstance(expr.right, BinaryOperation):
 
-        if expr.op == Operator.MULT and expr.right.op == Operator.PLUS:
+        if expr.op is Operator.MULT and expr.right.op is Operator.PLUS:
             # identify a, b and c in the formula 
             a = expr.left
             b = expr.right.left
@@ -19,7 +18,7 @@ def develop(expr):
     elif isinstance(expr, BinaryOperation) and\
             isinstance(expr.left, BinaryOperation):
         
-        if expr.op == Operator.MULT and expr.left.op == Operator.PLUS:
+        if expr.op is Operator.MULT and expr.left.op is Operator.PLUS:
             # identify a, b and c in the formula
             a = expr.right
             b = expr.left.left
@@ -44,9 +43,9 @@ def factor(expr):
     if isinstance(expr, BinaryOperation) and\
             isinstance(expr.left, BinaryOperation) and\
             isinstance(expr.right, BinaryOperation):
-        if expr.op == Operator.PLUS and\
-                expr.left.op == Operator.MULT and\
-                expr.right.op == Operator.MULT:
+        if expr.op is Operator.PLUS and\
+                expr.left.op is Operator.MULT and\
+                expr.right.op is Operator.MULT:
 
             # there must be a more elegant way of doing this...
             # identify what is a, b and c in the formula
@@ -83,14 +82,3 @@ def factor(expr):
     new_op = Operator.MULT
     new_right = BinaryOperation(b, Operator.PLUS, c)
     return BinaryOperation(new_left, new_op, new_right)
-
-def transform(expr):
-    print(expr)
-    print("1) Develop")
-    print("2) Factor")
-    choice = int(input())
-
-    if choice == 1:
-        return develop(expr)
-    if choice == 2:
-        return factor(expr)

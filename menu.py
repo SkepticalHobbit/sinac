@@ -57,23 +57,39 @@ def main(expr):
         stdscr.addstr(str(current_node), curses.color_pair(1))
         stdscr.addstr(expr_to_print[1])
         
-        stdscr.addstr(2, 0, 'T) Transform')
-        stdscr.addstr(3, 0, 'Q) Exit')
+        stdscr.addstr(2, 0, 'D) Develop')
+        stdscr.addstr(3, 0, 'F) Factor')
+        stdscr.addstr(4, 0, 'Q) Exit')
         stdscr.refresh()
 
         choice = stdscr.getkey()
 
         if choice == 'KEY_UP':
             traversal.pop()
-        if choice == 'KEY_LEFT':
+        if choice == 'KEY_DOWN':
             if not isinstance(current_node.left, Symbol):
                 traversal.append(current_node.left)
+        if choice == 'KEY_LEFT':
+            if len(traversal) > 1:
+                traversal.pop()
+                current_node = traversal[-1]
+                if not isinstance(current_node.left, Symbol):
+                    traversal.append(current_node.left)
         if choice == 'KEY_RIGHT':
-            if not isinstance(current_node.right, Symbol):
-                traversal.append(current_node.right)
+            if len(traversal) > 1:
+                traversal.pop()
+                current_node = traversal[-1]
+                if not isinstance(current_node.right, Symbol):
+                    traversal.append(current_node.right)
         
-        if choice.lower() == 't':
-            new_expr = transform_menu(stdscr, current_node)
+        if choice.lower() == 'd':
+            new_expr = transform.develop(current_node)
+
+            current_node.left = new_expr.left
+            current_node.op = new_expr.op
+            current_node.right = new_expr.right
+        if choice.lower() == 'f':
+            new_expr = transform.factor(current_node)
 
             current_node.left = new_expr.left
             current_node.op = new_expr.op

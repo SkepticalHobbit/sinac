@@ -13,36 +13,23 @@ def transform_menu(window, node):
     if choice == 2:
         return transform.factor(node)
 
-
-def node_selector_child(window, node):
-    if isinstance(node, BinaryOperation):
-        window.addstr(2, 0, '^) Up')
-        window.addstr(3, 0, '<-) ' + str(node.left))
-        window.addstr(4, 0, '->) ' + str(node.right))
-        window.addstr(5, 0, '3) Select')
-        window.refresh()
-        
-        choice = window.getkey()
-
-        if choice == 'KEY_UP':
-            return 'parent'
-        if choice == 'KEY_LEFT':
-            return node.left
-        if choice == 'KEY_RIGHT':
-            return node.right
-        if choice == 3:
-            return node
+def print_except(expr, except_expr):
+    string = ''
+    if expr != except_expr:
+        if not isinstance(expr.left, Symbol):
+            string += '('+print_except(expr.left, except_expr)+')'
+        else:
+            string += str(expr.left)
+        string += str(expr.op)
+        if not isinstance(expr.right, Symbol):
+            string += '('+print_except(expr.right, except_expr)+')'
+        else:
+            string += str(expr.right)
     else:
-        window.addstr(2, 0, '^) Up')
-        window.addstr(3, 0, '1) Select')
-        window.refresh()
-        choice = window.getkey()
-        choice = int(choice)
+        string = "#"
 
-        if choice == 0:
-            return 'parent'
-        if choice == 1:
-            return node
+    return string
+
 
 def main(expr):
     stdscr = curses.initscr()
@@ -51,44 +38,50 @@ def main(expr):
     curses.curs_set(False)
     stdscr.keypad(True)
 
+    # initialize colors
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, 226, -1)
+
     caughtExceptions = ""
     traversal = [expr]
 
-    try:
-        while len(traversal) > 0:
-            current_node = traversal[-1]
-           
-            stdscr.clear()
-            stdscr.addstr(0, 0, str(expr))
-            stdscr.addstr(1, 0, str(current_node))
-            stdscr.addstr(2, 0, '1) Switch node')
-            stdscr.addstr(3, 0, '2) Transform')
-            stdscr.addstr(4, 0, '3) Exit')
-            stdscr.refresh()
+    #try:
+    while len(traversal) > 0:
+        current_node = traversal[-1]
+       
+        stdscr.clear()
 
-            choice = stdscr.getkey()
-            choice = int(choice)
-            
-            stdscr.clear()
-            stdscr.addstr(0, 0, str(expr))
-            stdscr.addstr(1, 0, str(current_node))
-            
-            if choice == 1:
-                selected_node = node_selector_child(stdscr, current_node)
-                if selected_node == 'parent':
-                    traversal.pop()
-                elif selected_node is not None:
-                    traversal.append(selected_node)
-            if choice == 2:
-                new_expr = transform_menu(stdscr, current_node)
+        expr_to_print = print_except(expr, current_node).split('#')
+        stdscr.addstr(0, 0, expr_to_print[0])
+        stdscr.addstr(str(current_node), curses.color_pair(1))
+        stdscr.addstr(expr_to_print[1])
+        
+        stdscr.addstr(2, 0, 'T) Transform')
+        stdscr.addstr(3, 0, 'Q) Exit')
+        stdscr.refresh()
 
-                current_node.left = new_expr.left
-                current_node.op = new_expr.op
-                current_node.right = new_expr.right
-            if choice == 3:
-                break
-    except Exception as err:
-        caughtExceptions = str(err)
+        choice = stdscr.getkey()
+
+        if choice == 'KEY_UP':
+            traversal.pop()
+        if choice == 'KEY_LEFT':
+            if not isinstance(current_node.left, Symbol):
+                traversal.append(current_node.left)
+        if choice == 'KEY_RIGHT':
+            if not isinstance(current_node.right, Symbol):
+                traversal.append(current_node.right)
+        
+        if choice.lower() == 't':
+            new_expr = transform_menu(stdscr, current_node)
+
+            current_node.left = new_expr.left
+            current_node.op = new_expr.op
+            current_node.right = new_expr.right
+        if choice.lower() == 'q':
+            break
+    #except Exception as err:
+    #    caughtExceptions = str(err)
 
     curses.nocbreak()
     stdscr.keypad(False)
